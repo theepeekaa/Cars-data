@@ -1,0 +1,127 @@
+---
+title: "---Cheesy Cars---"
+date: "`r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  word_document: default
+  html_document: default
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE, cache = F}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  error = FALSE,
+  warning= FALSE,
+  message= FALSE)
+```
+
+
+## Introduction 
+
+DataSource:  https://www.kaggle.com/ananaymital/us-used-cars-dataset
+
+From the Kaggle website, we took a data set, A used and new cars with their details from all over the USA. This data set contains the details of car specifications along with the price and where they sold it. From the 3 million rows, we took a sample of 500,000 rows to identify a few research questions. Using RStudio to filter the dataset and understand the research we are looking for.The manipulations on the dataset are to identify the research question like what are the parameters affecting sales? Are those linked with the price? Who is the leading company, and who are their competitors?
+
+```{r,results='hide'}
+library(tidyverse)
+
+car_small <- read_csv("car_small.csv")
+summary(car_small)
+```
+
+
+## 1)	What brands have a more sales in the market?
+```{r, results='hide'}
+car_small %>% filter(!is.na(highway_fuel_economy),!is.na(make_name),!is.na(body_type),!is.na(city_fuel_economy),!is.na(dealer_zip)) %>% group_by(make_name) %>% summarize(number_of_cars_sold = n()) %>% arrange(desc(number_of_cars_sold))
+```
+## Interpretation:
+From the observation we picked the top 7 brands to check why they have more sales than the other companies. The top 7 brands are Ford, Chevrolet, Toyota, Honda, Nissan, Jeep, and Hyundai. Ford occupies the first place by selling 64029 cars compared to other car makes.
+
+## 2)	Are the most sales for the brand cars is because of a new car? Or a used car? From when did the company’s sales have raised? Any specific reason?
+```{r, results='hide'}
+car_small %>% filter(!is.na(highway_fuel_economy),!is.na(make_name),!is.na(body_type),!is.na(city_fuel_economy),!is.na(dealer_zip), make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai", year >2015 & year <2021) %>%group_by(make_name,year) %>% summarise(number_of_cars_sold = n())
+```
+## Interpretation:
+The observation is kept to the particular brands and finding the sales range from the year 2016 to 2020.
+And we saw that 
+For the Ford company, we can see that there is a significant change in sales in the year 2020. It has raised around 640%. 
+For the Chevrolet company, we can see that it has a change in their sales in the year 2020. It has raised 660%.
+For the Toyota company, we can see a huge change in their sales in the year 2020. It has risen to 380%.
+For the Honda company, we can see a change in sales in the year 2020. It has a huge raise of 900%
+For the Nissan company, we can see that there is also a change in sales year 2020, and that is of 300%
+For the Jeep company, we can see that there is a change in sales in the year 2020, and the rise is of 540%
+For the Hyundai company, we can see that in sales in the year 2020, It has a huge rise of 400%
+We can say that for all the top brand companies, there is a change in the particular year 2020. ( From google research, there are many changes in transportation because of a pandemic, to maintain a social distancing, the rise of cars has increased.)
+
+```{r, results='hide'}
+car_small %>% filter(!is.na(highway_fuel_economy),!is.na(make_name),!is.na(body_type),!is.na(city_fuel_economy),!is.na(dealer_zip), make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai", year >2015 & year <2021) %>%group_by(make_name,is_new) %>% summarise(number_of_cars_sold = n()) %>%  arrange(desc(number_of_cars_sold))
+```
+## Interpretation:
+From the observation, we can say that each car has more sales in New cars than the Used cars. Only the Toyota cars have more sales in used cars than new ones. Hence, We can say that Toyota is a more reliable company and can handle more miles than the others.
+
+## 3) For Illinois state, with the above observation, what kind of Body and Fuel type are the customers interested in?
+```{r}
+ggplot(data = (car_small %>% filter(dealer_zip<=70000&dealer_zip>=60000,!is.na(body_type), !is.na(fuel_type), make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai")))+ geom_bar(mapping=aes(x=body_type,color = fuel_type, fill = fuel_type)) 
+```
+
+## Interpretation:
+We can see that the most sold cars are SUV / Crossovers and Sedan. Also, we can see that they both have the same fuel type - Gasoline.
+
+## 4) With the above observation, for Illinois state, who is the leading car company that sold more cars? What's the company's best body type in the market?
+```{r}
+ggplot(data = (car_small %>%filter(dealer_zip<=70000&dealer_zip>=60000,!is.na(body_type), !is.na(fuel_type),make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai",body_type == "Sedan" | body_type == "SUV / Crossover", fuel_type == "Gasoline"))) + geom_bar(mapping = aes(x=make_name, color = body_type, fill = body_type))+facet_wrap(~body_type) 
+```
+
+## Interpretation:
+All the leading companies have their most sales in body type SUV / Crossover than the sedan.
+From the observation,  Ford and  Chevrolet are the top 2 brands, and they have maintained their position in the market, but Toyota has fewer sales in SUV / crossover than other companies. From the internet search, Honda has an excellent build quality in sedans, but they have very few sales in sedans compared to the other competitors. We can say that Jeep cars are only interested in Suv / Crossovers.
+
+## 5) What kind of millage do top brands offer? Are the sales dependent on the mileage?    
+```{r}
+ggplot(data = (car_small %>% filter(dealer_zip<=70000&dealer_zip>=60000,!is.na(body_type), !is.na(fuel_type),make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai",body_type == "Sedan" | body_type == "SUV / Crossover", fuel_type == "Gasoline") %>% mutate(avg_total_fuel_economy =(city_fuel_economy+highway_fuel_economy)/2)%>% group_by(make_name,body_type)%>% summarise(avg_mileage=mean(avg_total_fuel_economy,na.rm = T)) %>% arrange(desc(avg_mileage)))) + geom_col(mapping = aes(x= make_name,y = avg_mileage, fill = make_name)) + facet_wrap(~ body_type)
+```
+
+## Interpretation: 
+From the observation, Honda, Hyundai, and Nissan cars have more mileage than others, but Honda cars still lack sales.
+Ford is the top sales car and still lacks mileage than other companies.
+Jeep is only interested in Suv / Crossovers, and they still lack mileage compared to the other competitors.
+Honda and Nissan are leading the way on average millage capacity cars. 
+From these, we can say Sedan cars give a lot more mileage than the Suv/Crossovers. But comping both Suv/Crossovers have more sales. (any other parameters effecting the sales?)
+
+## 6) From the above, does engine displacement or engine cylinder gives more weightage for the sales?
+```{r}
+ggplot(data= (car_small %>% filter(dealer_zip<=70000&dealer_zip>=60000, ,!is.na(body_type),!is.na(fuel_type),make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai",body_type == "Sedan" | body_type == "SUV / Crossover", fuel_type == "Gasoline") %>% group_by(make_name,body_type) %>% summarise(avg_engine_displacement=mean(engine_displacement,na.rm=T)) %>% arrange(desc(avg_engine_displacement)))) + geom_col(mapping = aes(x=make_name,y=avg_engine_displacement, fill = make_name)) + facet_wrap(~body_type)
+```
+
+## Interpretation:
+From this, we can say that every brand has more engine displacement( CC) than their sedan cars.
+It seems like Engine displacement matters from the sales and customer's perspective.
+Jeep, being interested in Suv/Crossovers, are giving tough competition to the other top  powerful car Toyota 
+
+## Engine Cylinder
+```{r}
+ggplot(data= (car_small %>% filter(dealer_zip<=70000&dealer_zip>=60000, ,!is.na(body_type),!is.na(fuel_type),!is.na(engine_cylinders),make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai",body_type == "Sedan" | body_type == "SUV / Crossover", fuel_type == "Gasoline") %>% group_by(make_name,engine_cylinders,body_type) %>% summarise(number_of_cars = n()) %>% arrange(desc(number_of_cars)))) + geom_col(mapping = aes(x=make_name,y=number_of_cars, fill = engine_cylinders)) +facet_wrap(~body_type)
+```
+
+## Interpretation:
+We can see that the I4 engine is pretty common in sedans and Suv/Crossovers. But the engines V6, V8, and V10 are more powerful than I4. Suv/Crossovers are coming in all kinds of Engine sizes. V6 are the second-highest cylinders in Suv/Crossovers, and customers have a keen interest in powerful engines.
+It is also known that smaller engine cylinder vehicles give more mileage than the ones with Higher engine cylinders. 
+From both graphs, it is clear that sales of Suv/Crossovers are high because of engine displacement and engine cylinders.
+
+## 7) From above, Suv/Crossovers have more power and more sales, so how difference it shows in the price?
+```{r}
+ggplot(data=(car_small %>% filter(dealer_zip<=70000&dealer_zip>=60000, ,!is.na(body_type),!is.na(fuel_type),make_name == "Ford"| make_name == "Chevrolet"| make_name == "Toyota" | make_name == "Honda" | make_name == "Nissan"| make_name == "Jeep"|make_name == "Hyundai",body_type == "Sedan" | body_type == "SUV / Crossover", fuel_type == "Gasoline") %>% group_by(make_name, body_type) %>% summarise(avg_price= mean(price, na.rm=TRUE))))+geom_col(mapping =aes(x=make_name, y=avg_price,color=make_name, fill=make_name))+facet_wrap(~body_type) 
+```
+
+## Interpretation:
+As we can see, Ford and Toyota have the top prices in Suv/Crossovers. But, Honda is a bit more pricy in sedans than Ford and Toyota.
+From the graph, we can say that the price of Suv/Crossover cars is high than the Sedan cars. Engine cylinder and Engine displacement will make the car powerful. These powerful cars come at a high price compared to sedans.
+
+## Conclusion:
+In the top 7 brands, we can see that the price factor varies for a few parameters. Among them, engine displacement and engine cylinder play a crucial role. Although Suv/Crossovers have high sales with powerful engines, they lack mileage capacity.
+Sedan cars have a lot of I4 engine cars compared to the other engines. And they have a good fuel economy compared to the Suv/Crossovers.
+Most of the cars sold in the market have Gasoline as their fuel type, which gives more options on engine power.
+Ford company stays on the top of the market - they have all body type cars and have good sales in both Suv/Crossovers and Sedan. Having all these, they have a high price in Suv/Crossovers.  
+Hyundai is one of the top brands, giving a high mileage on both sedan and Suv/Crossovers. They have less engine displacement compared to others in Suv/Crossovers and fewer options in the Engine cylinder. Overall the price of the car is less, and the sales are less compared to the others.
+By providing with all kinds of engine cylinders and powerful engine displacement, body type as Suv/Crossover will give more sales. From the customer's perspective, a Sedan car gives more mileage than Suv/Crossovers.
