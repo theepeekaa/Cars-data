@@ -13,11 +13,8 @@
 
 
   ####  Submitted by:
-  
-                            Prudhvi Raj Vutukuru - Z1907615
-                            Zeel Dharmenbhai Patel - Z1914811
                             Theepeekaa Ramakrishnan Shanthi - Z1911800
-                            Sri Jayanth Srinivas Keerthi -Z1908455
+                            
 ### Introduction
 DataSource: https://www.kaggle.com/ananaymital/us-used-cars-dataset
 From the Kaggle website, we took a data set, A used and new cars with their details from all over the USA. This data set contains the details of car specifications along with the price and where they sold it. From the 3 million rows, we took a sample of 500,000 rows to identify a few research questions. Using RStudio to filter the dataset and understand the research we are looking for.The manipulations on the dataset are to identify the research question like what are the parameters affecting sales? Are those linked with the price? Who is the leading company, and who are their competitors?
