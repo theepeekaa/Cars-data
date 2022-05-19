@@ -7,12 +7,6 @@ Biagio Palese , Professor
 
 
 
-
-   Submitted by:                           
-                            Theepeekaa Ramakrishnan Shanthi - Z1911800
-
-
-
 —Cheesy Cars part 1 and part-2 —
 08 May, 2022
 Introduction
